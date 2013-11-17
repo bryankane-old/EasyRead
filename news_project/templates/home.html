@@ -1,0 +1,294 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EasyRead">
+    <meta name="author" content="Bryan Kane">
+
+    <title>EasyRead</title>
+
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/easyread.css' %}" rel="stylesheet">
+    <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+  </head>
+
+  <body>
+      <div id="top" class="header">
+      <div class="vert-text">
+        <div class='inner-wrapper'>
+          <img src="{% static 'img/easyread_logo.png' %}" class='logo' />
+          <h3>Making <em>interesting</em> content <em>accessible</em></h3>
+          <div class="row intro-buttons">
+            <h3>Browse by:</h3>
+            <div class="col-md-6"><a href="#reading-level" class="btn denim btn-block intro-button"><i class='fa fa-tachometer'></i>Level</a></div>
+            <div class="col-md-6"><a href="#source" class="btn denim btn-block intro-button"><i class='fa fa-globe' style="margin-top: 5px;"></i>Source</a></div>
+          </div>
+          <div class='intro-search row'>
+          <h3>Or search for a topic:</h3>
+            <div class='col-md-9'>
+            <input type="text" class="form-control topic-search" id="search" placeholder="i.e. Healthcare">
+            </div>
+            <div class='col-md-3'>
+            <a href="#source" class="btn denim btn-block search-button"><i class='fa fa-search' style="margin-top: 5px;"></i>Search</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- By Reading Level -->
+    <div id="reading-level" class="intro" style="display: none;">
+      <div class="container rl-container">
+        <div class="row">
+          <div class="col-md-8 col-md-offset-2 text-center">
+            <h2>Select your desired reading / grade level:</h2>
+            <div class="row">
+                <div class="col-sm-12">
+                    <!-- Reading Level Buttons -->
+                    <div class="reading-level-button">
+                        <ul class="clearfix">
+                            <li class="first-grade" data-grade="1">1<span>st</span></li>
+                            <li class="second-grade" data-grade="2">2<span>nd</span></li>
+                            <li class="third-grade" data-grade="3">3<span>rd</span></li>
+                            <li class="fourth-grade" data-grade="4">4<span>th</span></li>
+                            <li class="fifth-grade" data-grade="5">5<span>th</span></li>
+                            <li class="sixth-grade last" data-grade="6">6<span>th</span></li>
+                        </ul>
+                    </div>
+                    <div class="reading-level-button">
+                        <ul class="clearfix">
+                            <li class="seventh-grade" data-grade="7">7<span>th</span></li>
+                            <li class="eighth-grade" data-grade="8">8<span>th</span></li>
+                            <li class="ninth-grade" data-grade="9">9<span>th</span></li>
+                            <li class="tenth-grade" data-grade="10">10<span>th</span></li>
+                            <li class="eleventh-grade" data-grade="11">11<span>th</span></li>
+                            <li class="twelvth-grade last" data-grade="12">12<span>th</span></li>
+                        </ul>
+                    </div>
+                    <!--/ Reading Level Buttons -->
+                </div>
+            </div>
+            <p class="lead">We'll try to find news articles that are at, or close to, the grade level you select. <a href='#'>Read how we do it</a></p>
+          </div>
+        </div>
+      </div>
+      <div id="rl-spinner" style="display: none;">
+        <div class='spinner'>
+          <i class="fa fa-spinner fa-spin"></i> Loading...
+        </div>
+      </div>
+
+    </div>
+    <!-- /Reading Level -->
+
+    <!-- By Source -->
+    <div id="source" class="intro" style="display: none;">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 col-md-offset-3 text-center">
+            <h2>Choose your source</h2>
+            <p class="lead">This template really has it all. It's up to you to customize it to your liking! It features some fresh photography courtesy of <a target="_blank" href="http://join.deathtothestockphoto.com/">Death to the Stock Photo</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- /Source -->
+
+    <div id="services" class="services" style="display: none;">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4 text-center">
+            <h2>Featured Sources</h2>
+            <hr>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2 col-md-offset-2 text-center">
+            <div class="service-item">
+              <i class="service-icon"><img src="{% static 'img/nyt.png' %}" /></i>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+            <div class="service-item">
+              <i class="service-icon"><img src="{% static 'img/cnn.png' %}" /></i>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+            <div class="service-item">
+              <i class="service-icon"><img src="{% static 'img/bbc.png' %}" /></i>
+            </div>
+          </div>
+          <div class="col-md-2 text-center">
+            <div class="service-item">
+              <i class="service-icon"><img src="{% static 'img/usatoday.png' %}" /></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="loading" style="display: none;">
+      <div class="vert-text">
+        <div class='spinner'>
+          <i class="fa fa-spinner fa-spin"></i>
+            Loading...
+        </div>
+      </div>
+    </div>
+    <div id="results" class="services results" style="display: none;">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4 text-center">
+            <h2>Recent Articles</h2>
+            <h4 class='reading-level-subtext' style="display: none;">at or around the <span></span> grade reading level</h4>
+            <hr>
+          </div>
+        </div>
+        <div class='article-result-holder row'></div>
+      </div>
+    </div>
+  
+    <script id="newsArticle" type="text/template">
+    <div class='col-sm-4'>
+      <div class="article-box boxed">
+          <div class="article-header">
+              <span class='article-reading-level-icon' title="
+              Flesch Kincaid: <%= levels['flesch_kincaid'] %><br />
+              ARI: <%= levels['ari'] %><br />
+              Flesch: <%= levels['flesch'] %><br />
+              Gunning Fog: <%= levels['gunning_fog'] %><br />
+              SMOG Index: <%= levels['smog_index'] %><br />
+              Coleman Liau Index: <%= levels['coleman_liau_index'] %><br />
+              LIX: <%= levels['lix'] %><br />
+              RIX: <%= levels['rix'] %><br />
+              ">
+                <i class='fa fa-question-circle'></i>
+              </span>
+              
+              <span class="article-title"><%= title %></span>
+              <span class="article-source"><img src="http://google.com/s2/favicons?domain=<%= domain %>" /> <%= source %></span>
+          </div>
+          <div class="inner">
+              <div class="article-time">Today 2:25 pm</div>
+              <div class="article-excerpt"><%= formattedExcerpt %></div>
+              <div class='read-more'>Read more...</div>
+              <div class="clear"></div>
+          </div>
+      </div>
+    </div>
+    </script>
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/underscore.js' %}"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/dotdotdot.js' %}"></script>
+
+    <script>
+      var newsArticleTemplate = _.template($("#newsArticle").html());
+      $(function() {
+        $(".intro-button").click(function() {
+          var target = $(this.hash);
+          $(".intro").hide();
+          target.show();
+          $("#services").show();
+          $('html,body').animate({
+                scrollTop: target.offset().top
+              }, 1000);
+              return false;
+        });
+
+        $(".search-button").click(function() {
+          $(".loading .spinner").show();
+          $(".article-result-holder").html("");
+          $("#results").hide();
+          $(".loading").show();
+          $('html, body').animate({scrollTop: $(".loading").offset().top}, 1000);
+          setTimeout(function() {
+          $.get("{% url "google_news_search" %}", {"query": $(".topic-search").val()}, function(data) {
+            _.each(data, function(article) {
+              article.formattedExcerpt = encodeParagraphs(article.clean_content);
+              $(".article-result-holder").append(newsArticleTemplate(article))
+            });
+            if (data.length == 0) {
+              $(".article-result-holder").html("<h2 style='text-align: center;'>No articles found!</h2>");
+            }
+            $(".article-reading-level-icon").tooltip({'html': true, 'placement': 'auto left'});
+            $("#results").show();
+            $(".article-excerpt").dotdotdot();
+            $('html, body').animate({scrollTop: $("#results").offset().top}, 1000, 'swing', function() {
+              $(".loading .spinner").hide();
+            });
+            
+          });
+        }, 1000);
+        })
+
+
+        $(".reading-level-button li").click(function() {
+          $(".loading .spinner").show();
+          $(".article-result-holder").html("");
+          $("#results").hide();
+          $(".loading").show();
+          $(".reading-level-subtext").show();
+          $(".reading-level-subtext span").text($(this).text());
+          $('html, body').animate({scrollTop: $(".loading").offset().top}, 1000);
+          var gradeLevel = $(this).data("grade");
+          setTimeout(function() {
+          $.get("{% url "by_grade_level" %}", {"level": gradeLevel}, function(data) {
+            _.each(data, function(article) {
+              article.formattedExcerpt = encodeParagraphs(article.clean_content);
+              $(".article-result-holder").append(newsArticleTemplate(article))
+            });
+            if (data.length == 0) {
+              $(".article-result-holder").html("<h2 style='text-align: center;'>No articles found!</h2>");
+            }
+            $(".article-reading-level-icon").tooltip({'html': true, 'placement': 'auto left'});
+            $("#results").show();
+            $(".article-excerpt").dotdotdot();
+            $('html, body').animate({scrollTop: $("#results").offset().top}, 1000, 'swing', function() {
+              $(".loading .spinner").hide();
+            });
+            
+          });
+        }, 1000);
+        });
+
+
+
+      });
+
+  function encodeParagraphs(str) {
+    return str
+        .replace(/\r\n?/g,'\n')
+        // normalize newlines - I'm not sure how these
+        // are parsed in PC's. In Mac's they're \n's
+        .replace(/(^((?!\n)\s)+|((?!\n)\s)+$)/gm,'')
+        // trim each line
+        .replace(/(?!\n)\s+/g,' ')
+        // reduce multiple spaces to 2 (like in "a    b")
+        .replace(/^\n+|\n+$/g,'')
+        // trim the whole string
+        .replace(/[<>&"']/g,function(a) {
+        // replace these signs with encoded versions
+            switch (a) {
+                case '<'    : return '&lt;';
+                case '>'    : return '&gt;';
+                case '&'    : return '&amp;';
+                case '"'    : return '&quot;';
+                case '\''   : return '&apos;';
+            }
+        })
+        .replace(/\n{2,}/g,'</p><p>')
+        // replace 2 or more consecutive empty lines with these
+        .replace(/\n/g,'</p><p>')
+        // replace single newline symbols with the <br /> entity
+        .replace(/^(.+?)$/,'<p>$1</p>');
+        // wrap all the string into <p> tags
+        // if there's at least 1 non-empty character
+}
+    </script>
+
+  </body>
+
+</html>
