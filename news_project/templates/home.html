@@ -234,7 +234,7 @@
                   articleEl.highlight(data.medium, { wordsOnly: true, className: 'highlight warning' });
                   var time = 500;
 
-                  $(".highlight").each(function() {
+                  articleEl.each(".highlight", function() {
                       var a = $(this);
                       setTimeout( function(){ a.addClass("highlighted"); }, time)
                       time += 250 + (Math.random() * 500);
