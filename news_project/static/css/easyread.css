@@ -457,4 +457,15 @@ i.scroll:hover {
   -webkit-column-gap: 35px
 }
 
+.highlight {
+  background-size: 200% 100% !important;
+  transition: all 1s ease;
+  background-position-x: 100% !important; }
+  .highlight.problem {
+    background: linear-gradient(to right, #d2322d 50%, transparent 50%); }
+  .highlight.warning {
+    background: linear-gradient(to right, #ed9c28 50%, transparent 50%); }
+  .highlight.highlighted {
+    background-position-x: 0% !important; }
+
 /* */

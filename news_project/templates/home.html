@@ -193,9 +193,62 @@
     <script src="{% static 'js/underscore.js' %}"></script>
     <script src="{% static 'js/bootstrap.js' %}"></script>
     <script src="{% static 'js/dotdotdot.js' %}"></script>
+    <script src="{% static 'js/highlight.js' %}"></script>
 
     <script>
       var newsArticleTemplate = _.template($("#newsArticle").html());
+      var handleArticles = function(articles) {
+        _.each(articles, function(article) {
+            article.formattedExcerpt = encodeParagraphs(article.clean_content);
+            $(".article-result-holder").append(newsArticleTemplate(article))
+          });
+          if (articles.length == 0) {
+            $(".article-result-holder").html("<h2 style='text-align: center;'>No articles found!</h2>");
+          }
+          $(".article-reading-level-icon").tooltip({'html': true, 'placement': 'auto left'});
+          $(".read-more").click(function() {
+            var articleID = $(this).data("article");
+            $("#article-" + articleID).modal();
+            setUpModal();
+          });
+          $("#results").show();
+          $(".article-excerpt").dotdotdot();
+          $('html, body').animate({scrollTop: $("#results").offset().top}, 1000, 'swing', function() {
+            $(".loading .spinner").hide();
+          });
+      }
+
+      var setUpModal = function() {
+          $(".analyze-with-easyread").click(function() {
+            var button = $(this);
+            button.html('<i class="fa fa-spinner fa-spin"></i> Loading...');
+            var articleID = $(this).data("article");
+            var articleContent = $("#article-content-modal-" + articleID).text();
+            $.ajax("http://easyread.bkane.me:8000/easyread/difficultWords",
+              {data:
+                {"doc": articleContent, "grade": 2},
+               success:
+                function(data) {
+                  var articleEl = $("#article-content-modal-" + articleID);
+                  articleEl.highlight(data.hard, { wordsOnly: true, className: 'highlight problem' });
+                  articleEl.highlight(data.medium, { wordsOnly: true, className: 'highlight warning' });
+                  var time = 500;
+
+                  $(".highlight").each(function() {
+                      var a = $(this);
+                      setTimeout( function(){ a.addClass("highlighted"); }, time)
+                      time += 250 + (Math.random() * 500);
+                  });
+                  button.html('Analyzed!');
+                },
+               type: "POST",
+               timeout: 600000
+             }
+            );
+          });
+        }
+
+
       $(function() {
         $(".intro-button").click(function() {
           var target = $(this.hash);
@@ -215,34 +268,9 @@
           $(".loading").show();
           $('html, body').animate({scrollTop: $(".loading").offset().top}, 1000);
           setTimeout(function() {
-          $.get("{% url "google_news_search" %}", {"query": $(".topic-search").val()}, function(data) {
-            _.each(data, function(article) {
-              article.formattedExcerpt = encodeParagraphs(article.clean_content);
-              $(".article-result-holder").append(newsArticleTemplate(article))
-            });
-            if (data.length == 0) {
-              $(".article-result-holder").html("<h2 style='text-align: center;'>No articles found!</h2>");
-            }
-            $(".article-reading-level-icon").tooltip({'html': true, 'placement': 'auto left'});
-            $(".read-more").click(function() {
-              var articleID = $(this).data("article");
-              $("#article-" + articleID).modal();
-            });
-            $(".analyze-with-easyread").click(function() {
-              $(this).html('<i class="fa fa-spinner fa-spin"></i> Loading...');
-              console.log("about to post:")
-              console.log($("#article-content-" + $(this).data("article")).text());
-            });
-            $("#results").show();
-            $(".article-excerpt").dotdotdot();
-            $('html, body').animate({scrollTop: $("#results").offset().top}, 1000, 'swing', function() {
-              $(".loading .spinner").hide();
-            });
-            
-          });
-        }, 1000);
-        })
-
+            $.get("{% url "google_news_search" %}", {"query": $(".topic-search").val()}, handleArticles); 
+          }, 1000);
+        });
 
         $(".reading-level-button li").click(function() {
           $(".loading .spinner").show();
@@ -254,52 +282,10 @@
           $('html, body').animate({scrollTop: $(".loading").offset().top}, 1000);
           var gradeLevel = $(this).data("grade");
           setTimeout(function() {
-          $.get("{% url "by_grade_level" %}", {"level": gradeLevel}, function(data) {
-            _.each(data, function(article) {
-              article.formattedExcerpt = encodeParagraphs(article.clean_content);
-              $(".article-result-holder").append(newsArticleTemplate(article))
-            });
-            if (data.length == 0) {
-              $(".article-result-holder").html("<h2 style='text-align: center;'>No articles found!</h2>");
-            }
-            $(".article-reading-level-icon").tooltip({'html': true, 'placement': 'auto left'});
-            $(".read-more").click(function() {
-              var articleID = $(this).data("article");
-              $("#article-" + articleID).modal();
-            });
-            $(".analyze-with-easyread").click(function() {
-              $(this).html('<i class="fa fa-spinner fa-spin"></i> Loading...');
-              var articleID = $(this).data("article");
-              var articleContent = $("#article-content-" + articleID).text();
-              $.ajax("http://easyread.bkane.me:8000/easyread/difficultWords",
-                {data:
-                  {"doc": articleContent, "grade": 2},
-                 success:
-                  function(data) {
-                    var articleEl = $("article-content-modal-" + articleID);
-                    articleEl.highlight(data.hard, { wordsOnly: true, className: 'label label-danger' });
-                    articleEl.highlight(data.medium, { wordsOnly: true, className: 'label label-warning' });
-                  },
-                 type: "POST",
-                 timeout: 600000
-               }
-              );
-              console.log("about to post:")
-              console.log();
-            });
-            $("#results").show();
-            $(".article-excerpt").dotdotdot();
-            $('html, body').animate({scrollTop: $("#results").offset().top}, 1000, 'swing', function() {
-              $(".loading .spinner").hide();
-            });
-            
-          });
+          $.get("{% url "by_grade_level" %}", {"level": gradeLevel}, handleArticles);
         }, 1000);
-        });
-
-
-
       });
+    });
 
   function encodeParagraphs(str) {
     return str
