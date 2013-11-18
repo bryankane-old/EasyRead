@@ -34,6 +34,7 @@ class Article(models.Model):
             self.clean_content = nltk.clean_html(self.content)
         src = self.source
         return {
+            "id": self.id, 
             "source": src.name,
             "domain": src.domain,
             "title": self.title,

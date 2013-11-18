@@ -400,6 +400,61 @@ i.scroll:hover {
   color: #fff;
   text-align: center;
   margin-left: 50%;
+  -webkit-transition: background .3s ease-in-out;
+  transition: background .3s ease-in-out;
+}
+
+.article-box .read-more:hover {
+  cursor: pointer;
+  background: #3ba16b;
+}
+
+.article-modal .analyze-with-easyread {
+  background: #4daf7b;
+  border-radius: 2px;
+  height: 35px;
+  line-height: 30px;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  -webkit-transition: background .3s ease-in-out;
+  transition: background .3s ease-in-out;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px;
+}
+
+.article-modal .analyze-with-easyread:hover {
+  cursor: pointer;
+  background: #3ba16b;
+}
+
+.article-modal .modal-dialog {
+  width: 80%;
+}
+
+.article-modal .modal-content {
+  background-image: url('../img/extra_clean_paper.png');
+  background-repeat: repeat;
+  color: #333;
+  font-size: 1.15em;
+  padding: 30px 50px;
+}
+
+.article-modal .article-content img {
+  width: 100%;
+  height: auto;
+}
+
+.article-modal h2 {
+  font-size: 2.3em;
+}
+
+.article-modal .article-content {
+  -webkit-columns: 3;
+  text-align: justify;
+  -webkit-column-gap: 35px
 }
 
 /* */

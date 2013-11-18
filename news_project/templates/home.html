@@ -172,12 +172,22 @@
           </div>
           <div class="inner">
               <div class="article-time">Today 2:25 pm</div>
-              <div class="article-excerpt"><%= formattedExcerpt %></div>
-              <div class='read-more'>Read more...</div>
+              <div class="article-excerpt" id="article-content-<%= id %>"><%= formattedExcerpt %></div>
+              <div class='read-more' data-article="<%= id %>">Read more...</div>
               <div class="clear"></div>
           </div>
       </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade article-modal" tabindex="-1" id="article-<%= id %>" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class='analyze-with-easyread' data-article="<%= id %>">Analyze with EasyRead</div>
+          <h2><%= title %></h2>
+          <div class="article-content" id="article-content-modal-<%= id %>"><%= content %></div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
     </script>
     <script src="{% static 'js/jquery.js' %}"></script>
     <script src="{% static 'js/underscore.js' %}"></script>
@@ -214,6 +224,15 @@
               $(".article-result-holder").html("<h2 style='text-align: center;'>No articles found!</h2>");
             }
             $(".article-reading-level-icon").tooltip({'html': true, 'placement': 'auto left'});
+            $(".read-more").click(function() {
+              var articleID = $(this).data("article");
+              $("#article-" + articleID).modal();
+            });
+            $(".analyze-with-easyread").click(function() {
+              $(this).html('<i class="fa fa-spinner fa-spin"></i> Loading...');
+              console.log("about to post:")
+              console.log($("#article-content-" + $(this).data("article")).text());
+            });
             $("#results").show();
             $(".article-excerpt").dotdotdot();
             $('html, body').animate({scrollTop: $("#results").offset().top}, 1000, 'swing', function() {
@@ -244,6 +263,30 @@
               $(".article-result-holder").html("<h2 style='text-align: center;'>No articles found!</h2>");
             }
             $(".article-reading-level-icon").tooltip({'html': true, 'placement': 'auto left'});
+            $(".read-more").click(function() {
+              var articleID = $(this).data("article");
+              $("#article-" + articleID).modal();
+            });
+            $(".analyze-with-easyread").click(function() {
+              $(this).html('<i class="fa fa-spinner fa-spin"></i> Loading...');
+              var articleID = $(this).data("article");
+              var articleContent = $("#article-content-" + articleID).text();
+              $.ajax("http://easyread.bkane.me:8000/easyread/difficultWords",
+                {data:
+                  {"doc": articleContent, "grade": 2},
+                 success:
+                  function(data) {
+                    var articleEl = $("article-content-modal-" + articleID);
+                    articleEl.highlight(data.hard, { wordsOnly: true, className: 'label label-danger' });
+                    articleEl.highlight(data.medium, { wordsOnly: true, className: 'label label-warning' });
+                  },
+                 type: "POST",
+                 timeout: 600000
+               }
+              );
+              console.log("about to post:")
+              console.log();
+            });
             $("#results").show();
             $(".article-excerpt").dotdotdot();
             $('html, body').animate({scrollTop: $("#results").offset().top}, 1000, 'swing', function() {
