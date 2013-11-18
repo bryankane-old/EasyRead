@@ -209,8 +209,8 @@
           $(".read-more").click(function() {
             var articleID = $(this).data("article");
             $("#article-" + articleID).modal();
-            setUpModal();
           });
+          setUpModal();
           $("#results").show();
           $(".article-excerpt").dotdotdot();
           $('html, body').animate({scrollTop: $("#results").offset().top}, 1000, 'swing', function() {
