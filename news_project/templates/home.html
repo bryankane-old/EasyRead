@@ -88,8 +88,7 @@
       <div class="container">
         <div class="row">
           <div class="col-md-6 col-md-offset-3 text-center">
-            <h2>Choose your source</h2>
-            <p class="lead">This template really has it all. It's up to you to customize it to your liking! It features some fresh photography courtesy of <a target="_blank" href="http://join.deathtothestockphoto.com/">Death to the Stock Photo</a>.</p>
+            <h2>Coming Soon!</h2>
           </div>
         </div>
       </div>
@@ -184,10 +183,38 @@
         <div class="modal-content">
           <div class='analyze-with-easyread' data-article="<%= id %>">Analyze with EasyRead</div>
           <h2><%= title %></h2>
+          <div class="article-definitions" style="display: none;"></div>
           <div class="article-content" id="article-content-modal-<%= id %>"><%= content %></div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+    </script>
+    <script id="wordPopup" type="text/template">
+    <div class='word-popup-meaning' style="display: none;">
+    <i class="fa fa-times close-word"></i>
+    
+    <p class='word-definition'><%= definition %></p>
+    <p class='word-usages'><%= usages %></p>
+    <div class="row">
+      <div class='col-sm-6' style="text-align: center; padding-top: 10px;"><button class='btn btn-primary add-definition'>Add definition</button></div>
+      <div class='col-sm-6' style="word-break: break-all;">Synonyms:<br /><ul> <% _.each(synonyms, function(synonym) { %>
+        <li class='possible-replacement'><%= synonym %></li>
+        <% }); %>
+      </ul>
+    </div>
+    </div>
+    <div class='row' style="margin-top: 20px;">
+    <div class='col-sm-1'>
+      <i class="fa fa-chevron-left prev-word-meaning"></i>
+    </div>
+    <div class='col-sm-10' style="text-align: center;">
+      <h3 class='word-text'><%= word %></h3>
+    </div>
+    <div class='col-sm-1'>
+      <i class="fa fa-chevron-right next-word-meaning"></i>
+    </div>
+    </div>
+    </div>
     </script>
     <script src="{% static 'js/jquery.js' %}"></script>
     <script src="{% static 'js/underscore.js' %}"></script>
@@ -197,6 +224,7 @@
 
     <script>
       var newsArticleTemplate = _.template($("#newsArticle").html());
+      var wordPopupTemplate = _.template($("#wordPopup").html());
       var handleArticles = function(articles) {
         _.each(articles, function(article) {
             article.formattedExcerpt = encodeParagraphs(article.clean_content);
@@ -224,21 +252,86 @@
             button.html('<i class="fa fa-spinner fa-spin"></i> Loading...');
             var articleID = $(this).data("article");
             var articleContent = $("#article-content-modal-" + articleID).text();
-            $.ajax("http://easyread.bkane.me:8000/easyread/difficultWords",
+            $.ajax("http://easyread.bkane.me:8000/easyread/analyze",
               {data:
                 {"doc": articleContent, "grade": 2},
                success:
                 function(data) {
                   var articleEl = $("#article-content-modal-" + articleID);
-                  articleEl.highlight(data.hard, { wordsOnly: true, className: 'highlight problem' });
-                  articleEl.highlight(data.medium, { wordsOnly: true, className: 'highlight warning' });
+                  var difficultWords = data.difficultWords;
+                  articleEl.highlight(difficultWords.hard, { wordsOnly: true, className: 'highlight problem' });
+                  articleEl.highlight(difficultWords.medium, { wordsOnly: true, className: 'highlight warning' });
+
+                  var entities = data.entities;
+                  articleEl.highlight(entities.people[0], { wordsOnly: true, className: 'highlight person' });
+                  articleEl.highlight(entities.organizations[0], { wordsOnly: true, className: 'highlight organization' });
+                  articleEl.highlight(entities.locations[0], { wordsOnly: true, className: 'highlight location' });
+
                   var time = 500;
 
                   articleEl.find(".highlight").each(function() {
                       var a = $(this);
                       setTimeout( function(){ a.addClass("highlighted"); }, time)
-                      time += 250 + (Math.random() * 500);
+                      time += 150 + (Math.random() * 200);
                   });
+
+                  articleEl.find(".problem,.warning").on("dblclick", function() {
+                    var word = $(this).text();
+                    var wordObj = $(this);
+                    var wordMeanings = data.synonyms[word][0];
+                    var popupHtml = _.reduce(_.map(wordMeanings, function(meaning) {
+                      var synonyms = _.without(_.map(meaning.synonyms, function(s) {
+                        return s.replace("_", " "); }), word);
+                      var definition = meaning.definition.split(";")[0];
+                      var usages = _.rest(meaning.definition.split(";"), 1);
+                      var templateData = {"word": word, "definition": definition, "usages": usages, "synonyms": synonyms};
+                      return wordPopupTemplate(templateData);
+                    }), function(a, b) { return a + b; }, "");
+                    $(this).popover({
+                      "html": true,
+                      "content": popupHtml,
+                      "trigger": "click",
+                      "placement": "below"
+                    });
+                    $(this).popover('show');
+                    $(".word-popup-meaning").first().show();
+                    $(".next-word-meaning").on("click", function() {
+                      var parent = $(this).parents(".word-popup-meaning");
+                      if (parent.next().length > 0) {
+                        parent.hide();
+                        parent.next().show();
+                      }
+                    });
+                    $(".prev-word-meaning").on("click", function() {
+                      var parent = $(this).parents(".word-popup-meaning");
+                      if (parent.prev().length > 0) {
+                        parent.hide();
+                        parent.prev().show();
+                      }
+                    });
+                    $(".add-definition").on("click", function() {
+                      $(".article-definitions").show();
+                      var def = $(this).parents(".word-popup-meaning").find(".word-definition").text();
+                      $(".article-definitions").append("<div><strong>" + word + ":</strong> <em>" + def + "</em></div>");
+                      $(".close-word").trigger("click");
+                    });
+                    $(".possible-replacement").on("click", function() {
+                      wordObj.text($(this).text());
+                      $(".close-word").trigger("click");
+                      wordObj.addClass("replaced-word");
+                    });
+                    var that = this;
+                    $(".close-word").on('click', function() {
+                      $(that).popover('destroy');
+                    });
+
+
+                    // console.log($(this).text());
+                    // console.log();
+
+                  });
+
+                  
                   button.html('Analyzed!');
                 },
                type: "POST",
